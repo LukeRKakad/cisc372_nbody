@@ -6,7 +6,7 @@
 #include "config.h"
 #include "planets.h"
 #include "compute.h"
-
+#include <cuda_runtime.h>
 // represents the objects in the system.  Global variables
 vector3 *hVel, *d_hVel;
 vector3 *hPos, *d_hPos;
@@ -91,6 +91,7 @@ void printSystem(FILE* handle){
 
 int main(int argc, char **argv)
 {
+	
 	clock_t t0=clock();
 	int t_now;
 	//srand(time(NULL));
@@ -102,14 +103,27 @@ int main(int argc, char **argv)
 	#ifdef DEBUG
 	printSystem(stdout);
 	#endif
+	cudaMalloc((void**)&dPos, sizeof(vector3) * NUMENTITIES);
+	cudaMalloc((void**)&dVel, sizeof(vector3) * NUMENTITIES);
+	cudaMalloc((void**)&dMass, sizeof(double) * NUMENTITIES);	//init here i think
+	cudaMemcpy(dPos, hPos, sizeof(vector3) * NUMENTITIES, cudaMemcpyHostToDevice);
+	cudaMemcpy(dVel, hVel, sizeof(vector3) * NUMENTITIES, cudaMemcpyHostToDevice);
+	cudaMemcpy(dMass, mass, sizeof(double) * NUMENTITIES, cudaMemcpyHostToDevice);
 	for (t_now=0;t_now<DURATION;t_now+=INTERVAL){
-		compute();
+		int threadsPerBlock = 256;
+		int blocks = (NUMENTITIES + threadsPerBlock - 1) / threadsPerBlock;
+		compute<<<blocks, threadsPerBlock>>>(dPos, dVel, dMass, NUMENTITIES);
+		cudaDeviceSynchronize();
 	}
+	cudaMemcpy(hPos, dPos, sizeof(vector3) * NUMENTITIES, cudaMemcpyDeviceToHost);
+	cudaMemcpy(hVel, dVel, sizeof(vector3) * NUMENTITIES, cudaMemcpyDeviceToHost);
 	clock_t t1=clock()-t0;
 #ifdef DEBUG
 	printSystem(stdout);
 #endif
 	printf("This took a total time of %f seconds\n",(double)t1/CLOCKS_PER_SEC);
-
+	cudaFree(dPos);
+	cudaFree(dVel);
+	cudaFree(dMass);
 	freeHostMemory();
 }
