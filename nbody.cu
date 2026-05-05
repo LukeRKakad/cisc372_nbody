@@ -115,6 +115,10 @@ int main(int argc, char **argv)
 		int threadsPerBlock = 256;
 		int blocks = (NUMENTITIES + threadsPerBlock - 1) / threadsPerBlock;
 		compute<<<blocks, threadsPerBlock>>>(dPos, dVel, dMass, NUMENTITIES);
+		cudaError_t err = cudaGetLastError();
+		if (err != cudaSuccess) {
+    		printf("CUDA error: %s\n", cudaGetErrorString(err));
+		}
 		cudaDeviceSynchronize();
 	}
 	cudaMemcpy(hPos, dPos, sizeof(vector3) * NUMENTITIES, cudaMemcpyDeviceToHost);
