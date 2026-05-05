@@ -19,7 +19,7 @@ __global__ void compute(vector3* pos, vector3* vel, double* mass, int n){
         vector3 distance;
         distance[0] = pos[i][0] - pos[j][0];
         distance[1] = pos[i][1] - pos[j][1];
-        distance[2] = pos[i][2] - pos[j][2] + 1e-9;
+        distance[2] = pos[i][2] - pos[j][2];
 
         double dist_sq = distance[0]*distance[0] +
                          distance[1]*distance[1] +
