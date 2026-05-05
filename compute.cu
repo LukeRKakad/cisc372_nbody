@@ -10,6 +10,7 @@
 __global__ void compute(vector3* pos, vector3* vel, double* mass, int n){
 	//make an acceleration matrix which is NUMENTITIES squared in size;
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	if(i >=n){return;}
 	vector3 accel_sum = {0,0,0};
 
     for (int j = 0; j < n; j++) {
