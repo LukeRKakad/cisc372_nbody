@@ -65,8 +65,8 @@ void randomFill(int start, int count)
 	{
 		for (j = 0; j < 3; j++)
 		{
-			hPos[i][j] = (double)rand() / RAND_MAX * MAX_DISTANCE * 2 - MAX_DISTANCE;
-			hVel[i][j] = (double)rand() / RAND_MAX * MAX_VELOCITY * 2 - MAX_VELOCITY;
+			hVel[i][j] = (double)rand() / RAND_MAX * MAX_DISTANCE * 2 - MAX_DISTANCE;
+			hPos[i][j] = (double)rand() / RAND_MAX * MAX_VELOCITY * 2 - MAX_VELOCITY;
 			mass[i] = (double)rand() / RAND_MAX * MAX_MASS;
 		}
 	}
